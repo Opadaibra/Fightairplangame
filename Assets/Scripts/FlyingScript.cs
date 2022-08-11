@@ -11,7 +11,7 @@ public class FlyingScript : MonoBehaviour
     public Transform jetRoot;
     public float rotationSpeed = 2.0f;
     public float cameraSmooth = 4f;
-
+    public float Range = 100f;
     float speed;
     Rigidbody r;
     Quaternion lookRotation;
@@ -19,7 +19,7 @@ public class FlyingScript : MonoBehaviour
     float mouseXSmooth = 0;
     float mouseYSmooth = 0;
     Vector3 defaultJetRotation;
-
+    public GameObject Impact;
     // Start is called before the first frame update
     void Start()
     {
@@ -32,10 +32,13 @@ public class FlyingScript : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
-
+  
     void FixedUpdate()
     {
-        //Press Right Mouse Button to accelerate
+        if (Input.GetMouseButton(0))
+        {
+            Shoot();
+        }
         if (Input.GetMouseButton(1))
         {
             speed = Mathf.Lerp(speed, accelerationSpeed, Time.deltaTime * 3);
@@ -75,5 +78,29 @@ public class FlyingScript : MonoBehaviour
         rotationZ = Mathf.Clamp(rotationZ, -45, 45);
         jetRoot.transform.localEulerAngles = new Vector3(defaultJetRotation.x, defaultJetRotation.y, rotationZ);
         rotationZ = Mathf.Lerp(rotationZ, defaultJetRotation.z, Time.deltaTime * cameraSmooth);
+    }
+    void Shoot()
+    {
+
+        RaycastHit hit;
+        if (Physics.Raycast(mainCamera.transform.position, mainCamera.transform.forward, out hit, Range))
+        {
+
+
+            if (hit.rigidbody != null)
+            {
+        //       if(hit.rigidbody.transform.gameObject.tag =="enm")
+        //        {
+        //hit.rigidbody.AddForce(-hit.normal * 30);
+        //        Destroy(hit.rigidbody.transform.gameObject);
+        //        }
+        //        hit.rigidbody.AddForce(-hit.normal * 30);
+        //        Destroy(hit.rigidbody.transform.gameObject);
+            }
+            GameObject go = Instantiate(Impact, hit.point, Quaternion.LookRotation(hit.normal));
+            Destroy(go, 1f);
+        }
+
+
     }
 }
